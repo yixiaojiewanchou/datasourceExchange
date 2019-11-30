@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <context:component-scan base-package="com.datasourceExchange"></context:component-scan>
+
+    <context:property-placeholder location="classpath:db.properties" ignore-unresolvable="true"/>
+
+    <bean id="mysql1_dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <property name="user" value="${mysql1.username}"></property>
+        <property name="password" value="${mysql1.password}"></property>
+        <property name="driverClass" value="${mysql1.driver}"></property>
+        <property name="jdbcUrl" value="${mysql1.url}"></property>
+    </bean>
+
+    <bean id="mysql2_dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <property name="user" value="${mysql2.username}"></property>
+        <property name="password" value="${mysql2.password}"></property>
+        <property name="driverClass" value="${mysql2.driver}"></property>
+        <property name="jdbcUrl" value="${mysql2.url}"></property>
+    </bean>
+
+
+    <!-- 动态数据源管理 -->
+    <bean id="dataSource" class="com.datasourceExchange.datasource.DynamicDataSource">
+        <property name="targetDataSources">
+            <map key-type="java.lang.String">
+                <entry value-ref="mysql1_dataSource" key="mysql1_dataSource"></entry>
+                <entry value-ref="mysql2_dataSource" key="mysql2_dataSource"></entry>
+            </map>
+        </property>
+        <property name="defaultTargetDataSource" ref="mysql1_dataSource"></property><!-- 默认数据源-->
+    </bean>
+
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="mapperLocations" value="classpath:mapper/*.xml" />
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+
+
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.datasourceExchange.dao"/>
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
+    </bean>
+
+
+     <!--事务控制-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <tx:annotation-driven transaction-manager="transactionManager" />
+
+
+     <bean id="dataSourceAspect" class="com.datasourceExchange.datasource.MDataSourceAspect" />
+
+     <aop:config>
+         <aop:aspect ref="dataSourceAspect">
+            <!-- 拦截所有service方法 -->
+             <aop:pointcut id="pointcut" expression="execution(* com.datasourceExchange.service.impl.*.*(..))"/>
+             <aop:before pointcut-ref="pointcut" method="intercept" />
+         </aop:aspect>
+     </aop:config>
+
+</beans>
