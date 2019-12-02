@@ -1,43 +1,46 @@
-1.数据源配置：
+demo涉及：
+    多数据源切换方式：
+        手动切换（代码），注解方式
 
-    <bean id="mysql1_dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
-        <property name="user" value="${mysql1.username}"></property>
-        <property name="password" value="${mysql1.password}"></property>
-        <property name="driverClass" value="${mysql1.driver}"></property>
-        <property name="jdbcUrl" value="${mysql1.url}"></property>
-    </bean>
+    1.数据源配置：
 
-    <bean id="mysql2_dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
-        <property name="user" value="${mysql2.username}"></property>
-        <property name="password" value="${mysql2.password}"></property>
-        <property name="driverClass" value="${mysql2.driver}"></property>
-        <property name="jdbcUrl" value="${mysql2.url}"></property>
-    </bean>
+        <bean id="mysql1_dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+            <property name="user" value="${mysql1.username}"></property>
+            <property name="password" value="${mysql1.password}"></property>
+            <property name="driverClass" value="${mysql1.driver}"></property>
+            <property name="jdbcUrl" value="${mysql1.url}"></property>
+        </bean>
 
-    <!-- 动态数据源管理 -->
-    <bean id="dataSource" class="com.datasourceExchange.datasource.DynamicDataSource">
-        <property name="targetDataSources">
-            <map key-type="java.lang.String">
-                <entry value-ref="mysql1_dataSource" key="mysql1_dataSource"></entry>
-                <entry value-ref="mysql2_dataSource" key="mysql2_dataSource"></entry>
-            </map>
-        </property>
-        <property name="defaultTargetDataSource" ref="mysql1_dataSource"></property><!-- 默认数据源-->
-    </bean>
-    
+        <bean id="mysql2_dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+            <property name="user" value="${mysql2.username}"></property>
+            <property name="password" value="${mysql2.password}"></property>
+            <property name="driverClass" value="${mysql2.driver}"></property>
+            <property name="jdbcUrl" value="${mysql2.url}"></property>
+        </bean>
 
-2. aop配置：  
-
-     <bean id="dataSourceAspect" class="com.datasourceExchange.datasource.MDataSourceAspect" />
-     <aop:config>
-         <aop:aspect ref="dataSourceAspect">
-            <!-- 拦截所有service方法 -->
-             <aop:pointcut id="pointcut" expression="execution(* com.datasourceExchange.service.impl.*.*(..))"/>
-             <aop:before pointcut-ref="pointcut" method="intercept" />
-         </aop:aspect>
-     </aop:config> 
-     
-3.datasource包下直接复用  
+        <!-- 动态数据源管理 -->
+        <bean id="dataSource" class="com.datasourceExchange.datasource.DynamicDataSource">
+            <property name="targetDataSources">
+                <map key-type="java.lang.String">
+                    <entry value-ref="mysql1_dataSource" key="mysql1_dataSource"></entry>
+                    <entry value-ref="mysql2_dataSource" key="mysql2_dataSource"></entry>
+                </map>
+            </property>
+            <property name="defaultTargetDataSource" ref="mysql1_dataSource"></property><!-- 默认数据源-->
+        </bean>
 
 
-     
+    2. aop配置：
+
+         <bean id="dataSourceAspect" class="com.datasourceExchange.datasource.MDataSourceAspect" />
+         <aop:config>
+             <aop:aspect ref="dataSourceAspect">
+                <!-- 拦截所有service方法 -->
+                 <aop:pointcut id="pointcut" expression="execution(* com.datasourceExchange.service.impl.*.*(..))"/>
+                 <aop:before pointcut-ref="pointcut" method="intercept" />
+             </aop:aspect>
+         </aop:config>
+
+    3.datasource包下直接复用
+
+
