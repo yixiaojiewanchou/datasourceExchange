@@ -8,4 +8,6 @@ public interface UserDao {
     List<User> selectUserFromDB1();
 
     List<User> selectUserFromDB2();
+
+    int insertUser(User user);
 }

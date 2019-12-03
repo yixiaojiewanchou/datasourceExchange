@@ -1,0 +1,40 @@
+1.aop配置，配置文件的方式：----抽空学习注解的方式
+
+    <!--测试aop的使用，在方法前后打印日志-->
+    <bean id="logBean" class="com.datasourceExchange.aop.LogUtils"/>
+    <aop:config>
+        <aop:aspect id="log" ref="logBean">
+            <aop:pointcut id="logpoint" expression="execution(* com.datasourceExchange.controller..*(..))"/>
+            <aop:before method="before" pointcut-ref="logpoint"/>
+            <aop:after method="after" pointcut-ref="logpoint"/>
+        </aop:aspect>
+    </aop:config>
+
+    注意：controller切入时，需要在mvc的配置文件中加入：
+        <aop:aspectj-autoproxy />
+
+2.事务的测试，两种方式：注解的方式和基于xml的aop的事务配置的方式
+    <!--事务控制-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    1.注解的方式：可以使用@Transactional(rollbackFor = Exception.class)作用在方法上
+        <!--采用@Transactional注解方式使用事务-->
+        <tx:annotation-driven transaction-manager="transactionManager" />
+
+    2.基于xml的aop的事务配置,直接作用于整个service包及子包下的所有类的所有方法，抛出异常都会回滚
+        <tx:advice id="txAdvice" transaction-manager="transactionManager">
+            <tx:attributes>
+                <tx:method name="*" propagation="REQUIRED" read-only="false"/>
+            </tx:attributes>
+        </tx:advice>
+
+        <!--AOP事务-->
+        <aop:config>
+            <aop:pointcut id="pc" expression="execution(* *..service..*(..))"/>
+            <aop:advisor pointcut-ref="pc" advice-ref="txAdvice"/>
+        </aop:config>
+
+    注意：如果用try-catch捕获业务中的异常，事务注解(基于xml的aop的事务配置也一样)就会失效，业务失败，sql不会回滚
+          catch完全是画蛇添足

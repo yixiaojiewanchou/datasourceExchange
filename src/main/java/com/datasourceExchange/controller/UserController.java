@@ -2,12 +2,12 @@ package com.datasourceExchange.controller;
 
 import com.datasourceExchange.pojo.User;
 import com.datasourceExchange.service.IUserService;
+import com.datasourceExchange.service.IUserTransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.Resource;
 import java.util.List;
 
 @RestController
@@ -22,6 +22,9 @@ public class UserController {
     @Autowired
     @Qualifier("userServiceAnnoImpl")
     private IUserService userServiceAnno;
+
+    @Autowired
+    private IUserTransactionService userTransaction;
 
     @GetMapping("/test1")
     public List<User> test1(){
@@ -67,4 +70,9 @@ public class UserController {
         return userServiceAnno.selectUserFromDB22();
     }
 
+
+    @GetMapping("/test9")
+    public int test9(){
+        return userTransaction.insertUser();
+    }
 }

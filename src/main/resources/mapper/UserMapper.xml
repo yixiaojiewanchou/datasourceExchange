@@ -20,6 +20,9 @@
         select id,name from stu
     </select>
 
+    <insert id="insertUser" parameterType="com.datasourceExchange.pojo.User">
+        insert into student values(#{id},#{name})
+    </insert>
 
 
 </mapper>

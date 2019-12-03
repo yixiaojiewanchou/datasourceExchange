@@ -8,7 +8,7 @@
        http://www.springframework.org/schema/context
        http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
 
-    <context:component-scan base-package="com.datasourceExchange"></context:component-scan>
+    <context:component-scan base-package="com.datasourceExchange"/>
 
     <context:property-placeholder location="classpath:db.properties" ignore-unresolvable="true"/>
 
@@ -49,22 +49,51 @@
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
     </bean>
 
-
-     <!--事务控制-->
+    <!--事务控制-->
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource"/>
     </bean>
+
+    <!--采用@Transactional注解方式使用事务-->
     <tx:annotation-driven transaction-manager="transactionManager" />
 
 
-     <bean id="dataSourceAspect" class="com.datasourceExchange.datasource.MDataSourceAspect" />
+    <!--<tx:advice id="txAdvice" transaction-manager="transactionManager">-->
+        <!--<tx:attributes>-->
+            <!--<tx:method name="*" propagation="REQUIRED" read-only="false"/>-->
+        <!--</tx:attributes>-->
+    <!--</tx:advice>-->
 
+    <!--&lt;!&ndash;AOP事务&ndash;&gt;-->
+    <!--<aop:config>-->
+        <!--<aop:pointcut id="pc" expression="execution(* *..service..*(..))"/>-->
+        <!--<aop:advisor pointcut-ref="pc" advice-ref="txAdvice"/>-->
+    <!--</aop:config>-->
+
+
+
+     <!--bean配合aop实现方法切入，实现数据源切换-->
+     <bean id="dataSourceAspect" class="com.datasourceExchange.datasource.MDataSourceAspect" />
      <aop:config>
          <aop:aspect ref="dataSourceAspect">
             <!-- 拦截所有service方法 -->
-             <aop:pointcut id="pointcut" expression="execution(* com.datasourceExchange.service.impl.*.*(..))"/>
+             <aop:pointcut id="pointcut" expression="execution(* com.datasourceExchange..*(..))"/>
              <aop:before pointcut-ref="pointcut" method="intercept" />
          </aop:aspect>
      </aop:config>
+    <!--针对项目下所有模块所有方法，都可以-->
+    <!--<aop:pointcut id="pointcut" expression="execution(* com.datasourceExchange..*(..))"/>-->
+    <!--<aop:pointcut id="pointcut" expression="execution(* com.datasourceExchange..*.*(..))"/>-->
 
+
+
+    <!--测试aop的使用，在方法前后打印日志-->
+    <bean id="logBean" class="com.datasourceExchange.aop.LogUtils"/>
+    <aop:config>
+        <aop:aspect id="log" ref="logBean">
+            <aop:pointcut id="logpoint" expression="execution(* com.datasourceExchange.controller..*(..))"/>
+            <aop:before method="before" pointcut-ref="logpoint"/>
+            <aop:after method="after" pointcut-ref="logpoint"/>
+        </aop:aspect>
+    </aop:config>
 </beans>
