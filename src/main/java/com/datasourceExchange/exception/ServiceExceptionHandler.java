@@ -5,7 +5,6 @@ import com.datasourceExchange.vo.ResultVO;
 import org.apache.log4j.Logger;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.HashMap;
