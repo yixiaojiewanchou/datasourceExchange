@@ -21,7 +21,7 @@ import java.util.List;
  *      intercept()方法寻找完注解后，根据注解判断切换哪一个数据源数据源
  */
 
-@DataSource(DataSource.mysql1)
+//@DataSource(DataSource.mysql1)
 @Service("userServiceAnnoImpl")
 public class UserServiceAnnoImpl implements IUserService {
 

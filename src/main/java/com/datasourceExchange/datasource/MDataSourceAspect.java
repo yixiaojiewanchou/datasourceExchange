@@ -48,4 +48,13 @@ public class MDataSourceAspect {
             System.out.println(clazz + ":" + e.getMessage());
         }
     }
+
+    /**
+     * 方法执行完毕后，清理本地线程存储值
+     */
+    public void afterIntercept(){
+        System.out.println("清空数据源之前："+DataSourceContextHolder.getDBType());
+        DataSourceContextHolder.clearDBType();
+        System.out.println("清空数据源之后："+DataSourceContextHolder.getDBType());
+    }
 }

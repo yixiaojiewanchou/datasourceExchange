@@ -79,6 +79,7 @@
             <!-- 拦截所有service方法 -->
              <aop:pointcut id="pointcut" expression="execution(* com.datasourceExchange..*(..))"/>
              <aop:before pointcut-ref="pointcut" method="intercept" />
+             <aop:after pointcut-ref="pointcut" method="afterIntercept"/>
          </aop:aspect>
      </aop:config>
     <!--针对项目下所有模块所有方法，都可以-->
