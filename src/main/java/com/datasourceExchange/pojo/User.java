@@ -3,22 +3,34 @@ package com.datasourceExchange.pojo;
 public class User {
     private Integer id;
     private String name;
+    private Integer classesId;
+
+    public Integer getClassesId() {
+        return classesId;
+    }
+
+    public void setClassesId(Integer classesId) {
+        this.classesId = classesId;
+    }
 
     public Integer getId() {
         return id;
     }
+
     public void setId(Integer id) {
         this.id = id;
     }
+
     public String getName() {
         return name;
     }
+
     public void setName(String name) {
         this.name = name;
     }
 
 
-    public User(){
+    public User() {
 
     }
 
@@ -27,7 +39,12 @@ public class User {
         this.name = name;
     }
 
+    @Override
     public String toString() {
-        return "User [id=" + id + ", name=" + name + "]";
+        return "User{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", classesId=" + classesId +
+                '}';
     }
 }

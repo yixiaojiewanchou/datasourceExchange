@@ -9,3 +9,39 @@
 5.统一异常处理器
 
 6.统一返回类型
+
+7.mybatis查询list嵌套list,数据结构如下，班级列表嵌套学生列表
+[
+  {
+    id: 1,
+    name: "一班",
+    userList: [
+      {
+        id: 1,
+        name: "cl",
+        classesId: 1
+      },
+      {
+        id: 2,
+        name: "zl",
+        classesId: 1
+      }
+    ]
+  },
+  {
+    id: 2,
+    name: "二班",
+    userList: [
+      {
+        id: 3,
+        name: "mdk",
+        classesId: 2
+      },
+      {
+        id: 4,
+        name: "zxj",
+        classesId: 2
+      }
+    ]
+  }
+]

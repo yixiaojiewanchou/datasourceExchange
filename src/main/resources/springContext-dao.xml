@@ -57,18 +57,18 @@
     <!--采用@Transactional注解方式使用事务-->
     <tx:annotation-driven transaction-manager="transactionManager" />
 
+    <!--采用配置方式使用事务-->
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="*" propagation="REQUIRED" read-only="false"/>
+        </tx:attributes>
+    </tx:advice>
 
-    <!--<tx:advice id="txAdvice" transaction-manager="transactionManager">-->
-        <!--<tx:attributes>-->
-            <!--<tx:method name="*" propagation="REQUIRED" read-only="false"/>-->
-        <!--</tx:attributes>-->
-    <!--</tx:advice>-->
-
-    <!--&lt;!&ndash;AOP事务&ndash;&gt;-->
-    <!--<aop:config>-->
-        <!--<aop:pointcut id="pc" expression="execution(* *..service..*(..))"/>-->
-        <!--<aop:advisor pointcut-ref="pc" advice-ref="txAdvice"/>-->
-    <!--</aop:config>-->
+    <!--AOP事务-->
+    <aop:config>
+        <aop:pointcut id="pc" expression="execution(* *..service..*(..))"/>
+        <aop:advisor pointcut-ref="pc" advice-ref="txAdvice"/>
+    </aop:config>
 
 
 

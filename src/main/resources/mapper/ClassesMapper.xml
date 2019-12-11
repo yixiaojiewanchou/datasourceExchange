@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.datasourceExchange.dao.ClassesDao" >
+
+    <!-- mybatis查询list嵌套list -->
+
+
+    <!--子map可以写，可以不写-->
+    <!--写的话，select后面的字段直接取列名就可以了，然后在map中，再进行列名映射对象属性-->
+        <!--此时，如果列名后面也添加了as 别名，映射的时候就是别名和pojo属性的映射：5.5版本只可以别名映射,5.7版本列名，别名都可以-->
+    <!--写法，多写个map，方便更改数据库字段和pojo属性的映射-->
+
+    <!--不写的话，需要添加别名，然后pojo直接接收，注意一定要让别名与pojo中的属性一致-->
+    <!--写法比较简单，开发便捷-->
+
+    <!--子map-->
+    <!--<resultMap id="UserMap" type="com.datasourceExchange.pojo.User">-->
+        <!--<id column="id" property="id"/>-->
+        <!--<result column="name" property="name"/>-->
+        <!--<result column="classes_id" property="classesId"/>-->
+    <!--</resultMap>-->
+
+    <!--父map-->
+    <resultMap id="classesMap" type="com.datasourceExchange.pojo.Classes">
+        <result column="id" property="id" />
+        <result column="name" property="name" />
+
+        <!-- 下面这句很重要：作用就是通过selectUserByClassesId查出list然后映射到属性userList中。
+        其中，ofType为list的泛型，column为子select的入参(这里是id)，select为子查询的mapperId-->
+        <collection property="userList" ofType="com.datasourceExchange.pojo.User"
+                    column="{classes_id=id}" select="selectUserByClassesId"/>
+    </resultMap>
+
+
+    <!--子查询-->
+    <!--<select id="selectUserByClassesId" resultMap="UserMap">-->
+			<!--select-->
+				<!--id,-->
+				<!--name,-->
+                <!--classes_id-->
+			<!--from student-->
+            <!--<where>-->
+                <!--classes_id = #{classes_id}-->
+            <!--</where>-->
+    <!--</select>-->
+
+    <!--子查询-->
+    <select id="selectUserByClassesId" resultType="com.datasourceExchange.pojo.User">
+        select
+            id,
+            name,
+            classes_id as classesId
+        from student
+        <where>
+            classes_id = #{classes_id}
+        </where>
+    </select>
+
+    <!--父查询-->
+    <select id="selectClassesList" resultMap="classesMap">
+			select id,name from classes
+    </select>
+
+
+    <!--<select id="selectUserList" resultMap="UserMap">-->
+        <!--select-->
+            <!--id,-->
+            <!--name,-->
+            <!--classes_id-->
+        <!--from student-->
+    <!--</select>-->
+</mapper>
